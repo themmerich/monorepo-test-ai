@@ -1,0 +1,10 @@
+# Einheitliche Zeilenenden (LF) auf allen Plattformen, passend zu Prettier
+* text=auto eol=lf
+
+# Binärdateien nicht anfassen
+*.ico binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.woff binary
+*.woff2 binary
