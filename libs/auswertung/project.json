@@ -1,0 +1,19 @@
+{
+  "name": "auswertung",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/auswertung/src",
+  "prefix": "aw",
+  "projectType": "library",
+  "tags": ["type:feature", "scope:auswertung"],
+  "targets": {
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/libs/auswertung"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../coverage/libs/auswertung"
+      }
+    }
+  }
+}

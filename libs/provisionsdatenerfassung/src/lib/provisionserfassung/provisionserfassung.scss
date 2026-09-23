@@ -1,0 +1,38 @@
+.formular {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--wub-abstand-m);
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+input,
+select {
+  padding: 0.5rem;
+  font: inherit;
+  font-weight: 400;
+  border: 1px solid var(--wub-farbe-rahmen);
+  border-radius: var(--wub-radius);
+}
+
+.fehler {
+  font-weight: 400;
+  color: #b3261e;
+}
+
+.aktionen {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: var(--wub-abstand-s);
+}
+
+h2 {
+  margin: 2rem 0 var(--wub-abstand-m);
+  font-size: 1.2rem;
+}

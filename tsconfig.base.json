@@ -1,0 +1,31 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2022",
+    "module": "esnext",
+    "lib": ["es2022", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "paths": {
+      "@monorepo-test-ai/anwendungsrahmen": [
+        "./libs/anwendungsrahmen/src/index.ts"
+      ],
+      "@monorepo-test-ai/bestandsdaten": ["./libs/bestandsdaten/src/index.ts"],
+      "@monorepo-test-ai/provisionsdatenerfassung": [
+        "./libs/provisionsdatenerfassung/src/index.ts"
+      ],
+      "@monorepo-test-ai/auswertung": ["./libs/auswertung/src/index.ts"],
+      "@monorepo-test-ai/wuf": ["./libs/wuf/src/index.ts"],
+      "@monorepo-test-ai/wub": ["./libs/wub/src/index.ts"],
+      "@monorepo-test-ai/shared": ["./libs/shared/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

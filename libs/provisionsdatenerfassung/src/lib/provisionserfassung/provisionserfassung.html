@@ -1,0 +1,64 @@
+<wuf-page-header
+  titel="Provisionsdatenerfassung"
+  untertitel="Neue Provisionen zu einem Vertrag erfassen."
+/>
+
+<wub-card titel="Neue Provision">
+  <form [formGroup]="formular" (ngSubmit)="speichern()" class="formular">
+    <label>
+      Vertragsnummer
+      <input formControlName="vertragsnummer" placeholder="LV-100231" />
+      @if (
+        formular.controls.vertragsnummer.touched &&
+        formular.controls.vertragsnummer.invalid
+      ) {
+        <small class="fehler"
+          >Format: zwei Großbuchstaben, Bindestrich, sechs Ziffern</small
+        >
+      }
+    </label>
+
+    <label>
+      Sparte
+      <select formControlName="sparte">
+        @for (sparte of sparten; track sparte) {
+          <option [value]="sparte">{{ sparte }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Betrag (€)
+      <input type="number" step="0.01" formControlName="betrag" />
+      @if (
+        formular.controls.betrag.touched && formular.controls.betrag.invalid
+      ) {
+        <small class="fehler">Bitte einen Betrag größer 0 angeben</small>
+      }
+    </label>
+
+    <label>
+      Buchungsdatum
+      <input type="date" formControlName="buchungsdatum" />
+    </label>
+
+    <div class="aktionen">
+      <button wubButton type="submit">Erfassen</button>
+      <button
+        wubButton
+        variante="sekundaer"
+        type="button"
+        (click)="formular.reset()"
+      >
+        Zurücksetzen
+      </button>
+    </div>
+  </form>
+</wub-card>
+
+<h2>Erfasste Provisionen</h2>
+<wuf-data-table
+  [spalten]="spalten"
+  [zeilen]="erfasst()"
+  leerText="Noch keine Provisionen erfasst"
+/>

@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          filter: tree:0
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - run: npm ci
+
+      # Setzt die Basis für "nx affected" (PR: Ziel-Branch, Push: vorheriger Commit)
+      - uses: nrwl/nx-set-shas@v4
+
+      - run: npx nx format:check
+      - run: npx nx affected -t lint test build

@@ -1,0 +1,24 @@
+<header class="kopf">
+  <a routerLink="/" class="marke">Anwendungsrahmen</a>
+</header>
+
+<div class="rumpf">
+  <nav class="navigation" aria-label="Hauptnavigation">
+    <a
+      routerLink="/"
+      routerLinkActive="aktiv"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      Startseite
+    </a>
+    @for (eintrag of navigation; track eintrag.path) {
+      <a [routerLink]="eintrag.path" routerLinkActive="aktiv">
+        {{ eintrag.label }}
+      </a>
+    }
+  </nav>
+
+  <main class="inhalt">
+    <router-outlet />
+  </main>
+</div>

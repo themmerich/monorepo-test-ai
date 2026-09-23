@@ -1,0 +1,82 @@
+{
+  "name": "anwendungsrahmen",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "ar",
+  "sourceRoot": "apps/anwendungsrahmen/src",
+  "tags": ["type:app"],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/anwendungsrahmen",
+        "browser": "apps/anwendungsrahmen/src/main.ts",
+        "tsConfig": "apps/anwendungsrahmen/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/anwendungsrahmen/public"
+          }
+        ],
+        "styles": [
+          "libs/wub/src/styles/wub.scss",
+          "apps/anwendungsrahmen/src/styles.scss"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "configurations": {
+        "production": {
+          "buildTarget": "anwendungsrahmen:build:production"
+        },
+        "development": {
+          "buildTarget": "anwendungsrahmen:build:development"
+        }
+      }
+    },
+    "test": {
+      "executor": "@angular/build:unit-test",
+      "options": {
+        "watch": false
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "anwendungsrahmen:build",
+        "port": 4200,
+        "staticFilePath": "dist/apps/anwendungsrahmen/browser",
+        "spa": true
+      }
+    }
+  }
+}

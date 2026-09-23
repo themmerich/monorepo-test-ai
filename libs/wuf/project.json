@@ -1,0 +1,19 @@
+{
+  "name": "wuf",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/wuf/src",
+  "prefix": "wuf",
+  "projectType": "library",
+  "tags": ["type:ui"],
+  "targets": {
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/libs/wuf"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../coverage/libs/wuf"
+      }
+    }
+  }
+}

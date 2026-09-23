@@ -1,0 +1,19 @@
+{
+  "name": "anwendungsrahmen-shell",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/anwendungsrahmen/src",
+  "prefix": "ar",
+  "projectType": "library",
+  "tags": ["type:shell"],
+  "targets": {
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/libs/anwendungsrahmen"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../coverage/libs/anwendungsrahmen"
+      }
+    }
+  }
+}

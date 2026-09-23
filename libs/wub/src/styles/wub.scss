@@ -1,0 +1,65 @@
+// Globale Basis-Styles: Design-Tokens und Styles für Basis-Direktiven.
+// Wird von der App über project.json -> build.options.styles eingebunden.
+
+:root {
+  --wub-farbe-primaer: #0b5cad;
+  --wub-farbe-primaer-hover: #094a8b;
+  --wub-farbe-text: #1d2733;
+  --wub-farbe-text-leise: #5b6775;
+  --wub-farbe-hintergrund: #f3f5f8;
+  --wub-farbe-flaeche: #ffffff;
+  --wub-farbe-rahmen: #d8dee6;
+
+  --wub-abstand-s: 0.5rem;
+  --wub-abstand-m: 1rem;
+  --wub-abstand-l: 1.5rem;
+  --wub-radius: 6px;
+
+  --wub-schrift: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--wub-schrift);
+  color: var(--wub-farbe-text);
+  background: var(--wub-farbe-hintergrund);
+}
+
+.wub-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff;
+  background: var(--wub-farbe-primaer);
+  border: 1px solid var(--wub-farbe-primaer);
+  border-radius: var(--wub-radius);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--wub-farbe-primaer-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--sekundaer {
+    color: var(--wub-farbe-primaer);
+    background: transparent;
+
+    &:hover {
+      background: rgba(11, 92, 173, 0.08);
+    }
+  }
+}

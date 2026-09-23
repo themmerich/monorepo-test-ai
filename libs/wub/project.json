@@ -1,0 +1,19 @@
+{
+  "name": "wub",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/wub/src",
+  "prefix": "wub",
+  "projectType": "library",
+  "tags": ["type:base"],
+  "targets": {
+    "test": {
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/libs/wub"
+      ],
+      "options": {
+        "coverage.reportsDirectory": "../../coverage/libs/wub"
+      }
+    }
+  }
+}
