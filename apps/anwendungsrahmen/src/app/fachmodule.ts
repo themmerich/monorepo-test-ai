@@ -14,6 +14,11 @@ export interface Fachmodul {
    * `() => loadRemote('bestandsdaten/Routes').then(m => m.bestandsdatenRoutes)`.
    */
   laden: LoadChildrenCallback;
+  /**
+   * Unterseiten als Untermenü in der Side-Navigation. `pfad` ist relativ zum
+   * Fachmodul und muss zu den Routen der Lib passen (geprüft in app.spec.ts).
+   */
+  unterseiten?: { pfad: string; label: string }[];
 }
 
 /** Zentrales Register aller Fachmodule der Anwendung. */
@@ -35,6 +40,10 @@ export const fachmodule: Fachmodul[] = [
       import('@monorepo-test-ai/provisionsdatenerfassung').then(
         (m) => m.provisionsdatenerfassungRoutes,
       ),
+    unterseiten: [
+      { pfad: 'erfassen', label: 'Provisionen erfassen' },
+      { pfad: 'bezeichnungen', label: 'Provisionsbezeichnungen' },
+    ],
   },
   {
     pfad: FACHMODUL_PFADE.auswertung,
@@ -49,4 +58,8 @@ export const fachmodulNavigation: NavigationItem[] = fachmodule.map((m) => ({
   label: m.label,
   path: `/${m.pfad}`,
   beschreibung: m.beschreibung,
+  kinder: m.unterseiten?.map((u) => ({
+    label: u.label,
+    path: `/${m.pfad}/${u.pfad}`,
+  })),
 }));

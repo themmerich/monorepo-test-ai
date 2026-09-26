@@ -33,6 +33,41 @@ describe('App', () => {
     ]);
   });
 
+  it('zeigt die Unterseiten der Provisionsdatenerfassung als Untermenü', async () => {
+    const harness = await RouterTestingHarness.create(
+      '/provisionsdatenerfassung',
+    );
+    const untermenue = Array.from(
+      harness.fixture.nativeElement.querySelectorAll(
+        '.untermenue a',
+      ) as NodeListOf<HTMLAnchorElement>,
+    );
+
+    expect(untermenue.map((a) => a.textContent?.trim())).toEqual([
+      'Provisionen erfassen',
+      'Provisionsbezeichnungen',
+    ]);
+    expect(untermenue.map((a) => a.getAttribute('href'))).toEqual([
+      '/provisionsdatenerfassung/erfassen',
+      '/provisionsdatenerfassung/bezeichnungen',
+    ]);
+  });
+
+  it('führt jeder Menüpunkt auf eine existierende Route', async () => {
+    const harness = await RouterTestingHarness.create('/');
+    const router = TestBed.inject(Router);
+    const pfade = fachmodulNavigation.flatMap((e) => [
+      e.path,
+      ...(e.kinder ?? []).map((k) => k.path),
+    ]);
+
+    for (const pfad of pfade) {
+      await harness.navigateByUrl(pfad);
+      // Unbekannte Pfade landen über '**' auf der Startseite
+      expect(router.url.startsWith(pfad), pfad).toBe(true);
+    }
+  });
+
   it('lädt ein Fachmodul lazy', async () => {
     const harness = await RouterTestingHarness.create('/bestandsdaten');
     expect(harness.routeNativeElement?.textContent).toContain('Bestandsdaten');

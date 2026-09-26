@@ -15,7 +15,7 @@ test('Startseite verlinkt alle Fachmodule', async ({ page }) => {
 
 for (const [link, titel] of [
   ['Bestandsdaten', 'Bestandsdaten'],
-  ['Provisionsdatenerfassung', 'Provisionsdatenerfassung'],
+  ['Provisionsdatenerfassung', 'Provisionen erfassen'],
   ['Auswertung', 'Auswertung'],
 ]) {
   test(`Navigation zu ${link}`, async ({ page }) => {

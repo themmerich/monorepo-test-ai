@@ -13,6 +13,11 @@ export interface NavigationItem {
   path: string;
   /** Kurzbeschreibung, z. B. für die Startseite */
   beschreibung?: string;
+  /**
+   * Untereinträge, z. B. Unterseiten eines Fachmoduls. Die Shell zeigt sie
+   * eingerückt unter dem Eintrag an, solange dessen Bereich aktiv ist.
+   */
+  kinder?: readonly NavigationItem[];
 }
 
 export const NAVIGATION_ITEMS = new InjectionToken<readonly NavigationItem[]>(

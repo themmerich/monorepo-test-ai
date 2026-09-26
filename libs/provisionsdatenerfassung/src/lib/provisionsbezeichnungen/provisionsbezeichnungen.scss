@@ -1,0 +1,59 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 0.4rem var(--wub-abstand-s);
+  font-size: 0.85rem;
+  text-align: left;
+  color: var(--wub-farbe-text-leise);
+}
+
+td {
+  padding: 0.3rem var(--wub-abstand-s);
+}
+
+.kuerzel {
+  width: 7rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.45rem;
+  font: inherit;
+  border: 1px solid var(--wub-farbe-rahmen);
+  border-radius: var(--wub-radius);
+
+  &.ng-invalid.ng-touched {
+    border-color: #b3261e;
+  }
+}
+
+.unsichtbar {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.fehler {
+  color: #b3261e;
+}
+
+.aktionen {
+  display: flex;
+  align-items: center;
+  gap: var(--wub-abstand-s);
+  margin-top: var(--wub-abstand-m);
+}
+
+.abstand {
+  flex: 1;
+}
+
+.hinweis {
+  color: #1e7b34;
+  font-weight: 600;
+}
