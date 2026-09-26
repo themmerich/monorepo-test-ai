@@ -1,8 +1,8 @@
 import { LoadChildrenCallback } from '@angular/router';
-import { NavigationItem } from '@monorepo-test-ai/shared';
+import { FACHMODUL_PFADE, NavigationItem } from '@monorepo-test-ai/shared';
 
 export interface Fachmodul {
-  /** Routen-Segment, unter dem das Fachmodul erreichbar ist */
+  /** Routen-Segment, unter dem das Fachmodul erreichbar ist (Teil des URL-Vertrags) */
   pfad: string;
   label: string;
   beschreibung: string;
@@ -19,7 +19,7 @@ export interface Fachmodul {
 /** Zentrales Register aller Fachmodule der Anwendung. */
 export const fachmodule: Fachmodul[] = [
   {
-    pfad: 'bestandsdaten',
+    pfad: FACHMODUL_PFADE.bestandsdaten,
     label: 'Bestandsdaten',
     beschreibung: 'Verträge und Kunden im Bestand einsehen.',
     laden: () =>
@@ -28,7 +28,7 @@ export const fachmodule: Fachmodul[] = [
       ),
   },
   {
-    pfad: 'provisionsdatenerfassung',
+    pfad: FACHMODUL_PFADE.provisionsdatenerfassung,
     label: 'Provisionsdatenerfassung',
     beschreibung: 'Provisionen zu Verträgen erfassen.',
     laden: () =>
@@ -37,7 +37,7 @@ export const fachmodule: Fachmodul[] = [
       ),
   },
   {
-    pfad: 'auswertung',
+    pfad: FACHMODUL_PFADE.auswertung,
     label: 'Auswertung',
     beschreibung: 'Provisionen nach Sparte auswerten.',
     laden: () =>
