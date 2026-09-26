@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { WufDataTable, WufSpalte } from './data-table';
 
 interface Zeile {
@@ -22,6 +23,21 @@ describe('WufDataTable', () => {
     expect(
       element.querySelector('tbody td:last-child')?.textContent?.trim(),
     ).toBe('5 €');
+  });
+
+  it('rendert Zellen mit link als Router-Link', async () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(WufDataTable<Zeile>);
+    const spalten: WufSpalte<Zeile>[] = [
+      { key: 'name', label: 'Name', link: (z) => ['/details', z.name] },
+    ];
+    fixture.componentRef.setInput('spalten', spalten);
+    fixture.componentRef.setInput('zeilen', [{ name: 'A', wert: 5 }]);
+    await fixture.whenStable();
+
+    const link = (fixture.nativeElement as HTMLElement).querySelector('td a');
+    expect(link?.getAttribute('href')).toBe('/details/A');
+    expect(link?.textContent).toBe('A');
   });
 
   it('zeigt einen Hinweis bei leerer Liste', async () => {

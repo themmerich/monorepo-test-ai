@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 export interface WufSpalte<T> {
   key: keyof T & string;
@@ -6,11 +7,17 @@ export interface WufSpalte<T> {
   /** Optionale Formatierung des Zellwerts */
   format?: (wert: T[keyof T]) => string;
   ausrichtung?: 'links' | 'rechts';
+  /**
+   * Macht die Zelle zum Link. Rückgabe wie bei `routerLink`.
+   * Relative Pfade beziehen sich auf die Route der Seite, die die Tabelle verwendet.
+   */
+  link?: (zeile: T) => string | readonly unknown[];
 }
 
 /** Einfache Tabelle für Listen fachlicher Daten. */
 @Component({
   selector: 'wuf-data-table',
+  imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <table>
@@ -28,7 +35,13 @@ export interface WufSpalte<T> {
           <tr>
             @for (spalte of spalten(); track spalte.key) {
               <td [class.rechts]="spalte.ausrichtung === 'rechts'">
-                {{ anzeige(zeile, spalte) }}
+                @if (spalte.link) {
+                  <a [routerLink]="spalte.link(zeile)">{{
+                    anzeige(zeile, spalte)
+                  }}</a>
+                } @else {
+                  {{ anzeige(zeile, spalte) }}
+                }
               </td>
             }
           </tr>
@@ -70,6 +83,10 @@ export interface WufSpalte<T> {
     .rechts {
       text-align: right;
       font-variant-numeric: tabular-nums;
+    }
+    a {
+      color: var(--wub-farbe-primaer);
+      font-weight: 600;
     }
     .leer {
       color: var(--wub-farbe-text-leise);
