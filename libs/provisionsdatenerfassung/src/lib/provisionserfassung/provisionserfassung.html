@@ -1,5 +1,5 @@
 <wuf-page-header
-  titel="Provisionsdatenerfassung"
+  titel="Provisionen erfassen"
   untertitel="Neue Provisionen zu einem Vertrag erfassen."
 />
 
@@ -25,6 +25,19 @@
           <option [value]="sparte">{{ sparte }}</option>
         }
       </select>
+    </label>
+
+    <label>
+      Provisionsart
+      <select formControlName="art">
+        @for (b of bezeichnungen.alle(); track b.kuerzel) {
+          <option [value]="b.kuerzel">{{ b.bezeichnung }}</option>
+        }
+      </select>
+      <!-- Relativer Link zur Nachbar-Unterseite im selben Bereich -->
+      <small
+        ><a routerLink="../bezeichnungen">Bezeichnungen bearbeiten</a></small
+      >
     </label>
 
     <label>
@@ -59,6 +72,6 @@
 <h2>Erfasste Provisionen</h2>
 <wuf-data-table
   [spalten]="spalten"
-  [zeilen]="erfasst()"
+  [zeilen]="erfasst.alle()"
   leerText="Noch keine Provisionen erfasst"
 />

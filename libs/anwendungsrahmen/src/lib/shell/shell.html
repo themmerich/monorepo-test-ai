@@ -12,9 +12,27 @@
       Startseite
     </a>
     @for (eintrag of navigation; track eintrag.path) {
-      <a [routerLink]="eintrag.path" routerLinkActive="aktiv">
+      <a
+        [routerLink]="eintrag.path"
+        routerLinkActive="aktiv"
+        [class.hat-kinder]="eintrag.kinder?.length"
+      >
         {{ eintrag.label }}
       </a>
+      <!-- Untermenü nur im aktiven Bereich aufgeklappt -->
+      @if (aufgeklappt().has(eintrag.path)) {
+        <div class="untermenue" role="group" [attr.aria-label]="eintrag.label">
+          @for (kind of eintrag.kinder; track kind.path) {
+            <a
+              [routerLink]="kind.path"
+              routerLinkActive="aktiv"
+              ariaCurrentWhenActive="page"
+            >
+              {{ kind.label }}
+            </a>
+          }
+        </div>
+      }
     }
   </nav>
 

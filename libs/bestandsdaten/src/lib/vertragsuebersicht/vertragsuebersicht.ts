@@ -2,68 +2,99 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  signal,
+  inject,
+  input,
 } from '@angular/core';
-import { formatEuro, Sparte } from '@monorepo-test-ai/shared';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { formatEuro, Sparte, SPARTEN } from '@monorepo-test-ai/shared';
 import { WufDataTable, WufPageHeader, WufSpalte } from '@monorepo-test-ai/wuf';
-
-interface Vertrag {
-  vertragsnummer: string;
-  kunde: string;
-  sparte: Sparte;
-  jahresbeitrag: number;
-}
+import { Vertrag, Vertragsbestand } from '../vertragsbestand';
 
 @Component({
   selector: 'bd-vertragsuebersicht',
-  imports: [WufPageHeader, WufDataTable],
+  imports: [WufPageHeader, WufDataTable, RouterLink, RouterLinkActive],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <wuf-page-header
       titel="Bestandsdaten"
-      [untertitel]="anzahl() + ' Verträge im Bestand'"
+      [untertitel]="vertraege().length + ' Verträge im Bestand'"
     />
-    <wuf-data-table [spalten]="spalten" [zeilen]="vertraege()" />
+
+    <!-- Interne Navigation über Query-Parameter: gleiche Route, anderer Filter -->
+    <nav class="filter" aria-label="Filter nach Sparte">
+      <a
+        routerLink="."
+        routerLinkActive="aktiv"
+        [routerLinkActiveOptions]="{
+          paths: 'exact',
+          queryParams: 'exact',
+          matrixParams: 'ignored',
+          fragment: 'ignored',
+        }"
+        >Alle</a
+      >
+      @for (s of sparten; track s) {
+        <a
+          routerLink="."
+          [queryParams]="{ sparte: s }"
+          routerLinkActive="aktiv"
+          >{{ s }}</a
+        >
+      }
+    </nav>
+
+    <wuf-data-table
+      [spalten]="spalten"
+      [zeilen]="vertraege()"
+      leerText="Keine Verträge in dieser Sparte"
+    />
+  `,
+  styles: `
+    .filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--wub-abstand-s);
+      margin-bottom: var(--wub-abstand-m);
+    }
+    .filter a {
+      padding: 0.3rem 0.8rem;
+      color: var(--wub-farbe-text);
+      text-decoration: none;
+      background: var(--wub-farbe-flaeche);
+      border: 1px solid var(--wub-farbe-rahmen);
+      border-radius: 999px;
+    }
+    .filter a.aktiv {
+      color: #fff;
+      background: var(--wub-farbe-primaer);
+      border-color: var(--wub-farbe-primaer);
+    }
   `,
 })
 export class Vertragsuebersicht {
-  protected readonly vertraege = signal<Vertrag[]>([
-    {
-      vertragsnummer: 'LV-100231',
-      kunde: 'Anna Berger',
-      sparte: 'Leben',
-      jahresbeitrag: 1840,
-    },
-    {
-      vertragsnummer: 'KV-200417',
-      kunde: 'Jonas Keller',
-      sparte: 'Kranken',
-      jahresbeitrag: 5220,
-    },
-    {
-      vertragsnummer: 'SV-300982',
-      kunde: 'Meier GmbH',
-      sparte: 'Sach',
-      jahresbeitrag: 960.5,
-    },
-    {
-      vertragsnummer: 'KF-401155',
-      kunde: 'Lea Schmitt',
-      sparte: 'KFZ',
-      jahresbeitrag: 712.4,
-    },
-    {
-      vertragsnummer: 'LV-100877',
-      kunde: 'Tom Wagner',
-      sparte: 'Leben',
-      jahresbeitrag: 2400,
-    },
-  ]);
+  private readonly bestand = inject(Vertragsbestand);
 
-  protected readonly anzahl = computed(() => this.vertraege().length);
+  /**
+   * Query-Parameter `?sparte=...`, per withComponentInputBinding gebunden.
+   * Teil des URL-Vertrags (siehe bestandsdatenVerweise in shared).
+   */
+  readonly sparte = input<Sparte>();
+
+  protected readonly sparten = SPARTEN;
+
+  protected readonly vertraege = computed(() => {
+    const sparte = this.sparte();
+    const alle = this.bestand.alle();
+    return sparte ? alle.filter((v) => v.sparte === sparte) : alle;
+  });
 
   protected readonly spalten: WufSpalte<Vertrag>[] = [
-    { key: 'vertragsnummer', label: 'Vertragsnummer' },
+    {
+      key: 'vertragsnummer',
+      label: 'Vertragsnummer',
+      // Relativer Link: /bestandsdaten -> /bestandsdaten/<vertragsnummer>
+      link: (vertrag) => [vertrag.vertragsnummer],
+    },
     { key: 'kunde', label: 'Kunde' },
     { key: 'sparte', label: 'Sparte' },
     {

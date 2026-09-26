@@ -48,6 +48,25 @@
       font-weight: 600;
       background: rgba(11, 92, 173, 0.08);
     }
+
+    // Bei Einträgen mit Untermenü wird nur die aktive Unterseite hinterlegt
+    &.hat-kinder.aktiv {
+      background: none;
+    }
+  }
+}
+
+.untermenue {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 var(--wub-abstand-s) var(--wub-abstand-m);
+  padding-left: var(--wub-abstand-s);
+  border-left: 2px solid var(--wub-farbe-rahmen);
+
+  a {
+    padding: 0.4rem var(--wub-abstand-m);
+    font-size: 0.93rem;
   }
 }
 
@@ -68,6 +87,13 @@
     width: auto;
     border-right: none;
     border-bottom: 1px solid var(--wub-farbe-rahmen);
+  }
+
+  .untermenue {
+    flex-basis: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0;
   }
 
   .inhalt {

@@ -1,8 +1,8 @@
 import { LoadChildrenCallback } from '@angular/router';
-import { NavigationItem } from '@monorepo-test-ai/shared';
+import { FACHMODUL_PFADE, NavigationItem } from '@monorepo-test-ai/shared';
 
 export interface Fachmodul {
-  /** Routen-Segment, unter dem das Fachmodul erreichbar ist */
+  /** Routen-Segment, unter dem das Fachmodul erreichbar ist (Teil des URL-Vertrags) */
   pfad: string;
   label: string;
   beschreibung: string;
@@ -14,12 +14,17 @@ export interface Fachmodul {
    * `() => loadRemote('bestandsdaten/Routes').then(m => m.bestandsdatenRoutes)`.
    */
   laden: LoadChildrenCallback;
+  /**
+   * Unterseiten als Untermenü in der Side-Navigation. `pfad` ist relativ zum
+   * Fachmodul und muss zu den Routen der Lib passen (geprüft in app.spec.ts).
+   */
+  unterseiten?: { pfad: string; label: string }[];
 }
 
 /** Zentrales Register aller Fachmodule der Anwendung. */
 export const fachmodule: Fachmodul[] = [
   {
-    pfad: 'bestandsdaten',
+    pfad: FACHMODUL_PFADE.bestandsdaten,
     label: 'Bestandsdaten',
     beschreibung: 'Verträge und Kunden im Bestand einsehen.',
     laden: () =>
@@ -28,16 +33,20 @@ export const fachmodule: Fachmodul[] = [
       ),
   },
   {
-    pfad: 'provisionsdatenerfassung',
+    pfad: FACHMODUL_PFADE.provisionsdatenerfassung,
     label: 'Provisionsdatenerfassung',
     beschreibung: 'Provisionen zu Verträgen erfassen.',
     laden: () =>
       import('@monorepo-test-ai/provisionsdatenerfassung').then(
         (m) => m.provisionsdatenerfassungRoutes,
       ),
+    unterseiten: [
+      { pfad: 'erfassen', label: 'Provisionen erfassen' },
+      { pfad: 'bezeichnungen', label: 'Provisionsbezeichnungen' },
+    ],
   },
   {
-    pfad: 'auswertung',
+    pfad: FACHMODUL_PFADE.auswertung,
     label: 'Auswertung',
     beschreibung: 'Provisionen nach Sparte auswerten.',
     laden: () =>
@@ -49,4 +58,8 @@ export const fachmodulNavigation: NavigationItem[] = fachmodule.map((m) => ({
   label: m.label,
   path: `/${m.pfad}`,
   beschreibung: m.beschreibung,
+  kinder: m.unterseiten?.map((u) => ({
+    label: u.label,
+    path: `/${m.pfad}/${u.pfad}`,
+  })),
 }));

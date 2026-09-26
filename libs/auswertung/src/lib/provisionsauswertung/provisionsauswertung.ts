@@ -4,9 +4,21 @@ import {
   computed,
   signal,
 } from '@angular/core';
-import { formatEuro, Sparte, SPARTEN } from '@monorepo-test-ai/shared';
+import { RouterLink } from '@angular/router';
+import {
+  bestandsdatenVerweise,
+  formatEuro,
+  Sparte,
+  SPARTEN,
+} from '@monorepo-test-ai/shared';
 import { WubCard } from '@monorepo-test-ai/wub';
 import { WufPageHeader } from '@monorepo-test-ai/wuf';
+
+interface Provision {
+  vertragsnummer: string;
+  sparte: Sparte;
+  betrag: number;
+}
 
 interface ProvisionsSumme {
   sparte: Sparte;
@@ -14,9 +26,14 @@ interface ProvisionsSumme {
   anteilProzent: number;
 }
 
+/**
+ * Querverweise nach Bestandsdaten laufen nur über den URL-Vertrag
+ * (`bestandsdatenVerweise` aus shared). Es gibt keinen Import aus dem
+ * Fachmodul Bestandsdaten.
+ */
 @Component({
   selector: 'aw-provisionsauswertung',
-  imports: [WufPageHeader, WubCard],
+  imports: [RouterLink, WufPageHeader, WubCard],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <wuf-page-header
@@ -27,8 +44,14 @@ interface ProvisionsSumme {
     <wub-card [titel]="'Gesamt: ' + format(gesamt())">
       <ul class="balken">
         @for (zeile of summen(); track zeile.sparte) {
+          @let ziel = verweise.vertraege({ sparte: zeile.sparte });
           <li>
-            <span class="label">{{ zeile.sparte }}</span>
+            <a
+              class="label"
+              [routerLink]="ziel.pfad"
+              [queryParams]="ziel.queryParams"
+              >{{ zeile.sparte }}</a
+            >
             <span class="spur">
               <span
                 class="fuellung"
@@ -40,6 +63,20 @@ interface ProvisionsSumme {
         }
       </ul>
     </wub-card>
+
+    <wub-card titel="Größte Einzelprovisionen" class="top">
+      <ol>
+        @for (p of groessteProvisionen(); track p.vertragsnummer) {
+          <li>
+            <a [routerLink]="verweise.vertrag(p.vertragsnummer).pfad">{{
+              p.vertragsnummer
+            }}</a>
+            <span>{{ p.sparte }}</span>
+            <span class="wert">{{ format(p.betrag) }}</span>
+          </li>
+        }
+      </ol>
+    </wub-card>
   `,
   styles: `
     .balken {
@@ -49,11 +86,15 @@ interface ProvisionsSumme {
       padding: 0;
       list-style: none;
     }
-    li {
+    .balken li {
       display: grid;
       grid-template-columns: 6rem 1fr 8rem;
       align-items: center;
       gap: var(--wub-abstand-m);
+    }
+    a {
+      color: var(--wub-farbe-primaer);
+      font-weight: 600;
     }
     .spur {
       height: 0.75rem;
@@ -71,17 +112,31 @@ interface ProvisionsSumme {
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
+    .top {
+      margin-top: var(--wub-abstand-m);
+    }
+    ol {
+      display: grid;
+      gap: var(--wub-abstand-s);
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+    ol li span {
+      margin-left: var(--wub-abstand-m);
+    }
   `,
 })
 export class Provisionsauswertung {
+  protected readonly verweise = bestandsdatenVerweise;
+
   // Demodaten, später aus einem Backend-Service
-  private readonly provisionen = signal<{ sparte: Sparte; betrag: number }[]>([
-    { sparte: 'Leben', betrag: 12480 },
-    { sparte: 'Leben', betrag: 3310 },
-    { sparte: 'Kranken', betrag: 9120 },
-    { sparte: 'Sach', betrag: 4275.5 },
-    { sparte: 'KFZ', betrag: 2890 },
-    { sparte: 'KFZ', betrag: 1450 },
+  private readonly provisionen = signal<Provision[]>([
+    { vertragsnummer: 'LV-100231', sparte: 'Leben', betrag: 12480 },
+    { vertragsnummer: 'LV-100877', sparte: 'Leben', betrag: 3310 },
+    { vertragsnummer: 'KV-200417', sparte: 'Kranken', betrag: 9120 },
+    { vertragsnummer: 'SV-300982', sparte: 'Sach', betrag: 4275.5 },
+    { vertragsnummer: 'KF-401155', sparte: 'KFZ', betrag: 2890 },
+    { vertragsnummer: 'KF-401290', sparte: 'KFZ', betrag: 1450 },
   ]);
 
   protected readonly gesamt = computed(() =>
@@ -101,6 +156,10 @@ export class Provisionsauswertung {
       anteilProzent: (z.summe / maximum) * 100,
     }));
   });
+
+  protected readonly groessteProvisionen = computed(() =>
+    [...this.provisionen()].sort((a, b) => b.betrag - a.betrag).slice(0, 3),
+  );
 
   protected readonly format = formatEuro;
 }

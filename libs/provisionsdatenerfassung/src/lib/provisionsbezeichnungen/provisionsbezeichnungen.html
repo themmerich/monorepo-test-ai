@@ -1,0 +1,80 @@
+<wuf-page-header
+  titel="Provisionsbezeichnungen"
+  untertitel="Bezeichnungen der Provisionsarten pflegen."
+/>
+
+<wub-card titel="Provisionsbezeichnungen">
+  <form [formGroup]="formular" (ngSubmit)="speichern()">
+    <table>
+      <thead>
+        <tr>
+          <th>Kürzel</th>
+          <th>Bezeichnung</th>
+          <th><span class="unsichtbar">Aktion</span></th>
+        </tr>
+      </thead>
+      <tbody formArrayName="eintraege">
+        @for (zeile of zeilen; track $index; let i = $index) {
+          <tr [formGroupName]="i">
+            <td class="kuerzel">
+              <input
+                formControlName="kuerzel"
+                [attr.aria-label]="'Kürzel Zeile ' + (i + 1)"
+              />
+            </td>
+            <td>
+              <input
+                formControlName="bezeichnung"
+                [attr.aria-label]="'Bezeichnung Zeile ' + (i + 1)"
+              />
+            </td>
+            <td>
+              <button
+                wubButton
+                variante="sekundaer"
+                type="button"
+                (click)="entfernen(i)"
+              >
+                Entfernen
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (formular.invalid && formular.touched) {
+      <p class="fehler">
+        Jede Zeile braucht ein Kürzel aus 2–3 Großbuchstaben und eine
+        Bezeichnung.
+      </p>
+    }
+
+    <div class="aktionen">
+      <button
+        wubButton
+        variante="sekundaer"
+        type="button"
+        (click)="hinzufuegen()"
+      >
+        Zeile hinzufügen
+      </button>
+      <span class="abstand"></span>
+      @if (gespeichert() && formular.pristine) {
+        <span class="hinweis" role="status">Gespeichert</span>
+      }
+      <button
+        wubButton
+        variante="sekundaer"
+        type="button"
+        [disabled]="formular.pristine"
+        (click)="verwerfen()"
+      >
+        Verwerfen
+      </button>
+      <button wubButton type="submit" [disabled]="formular.pristine">
+        Speichern
+      </button>
+    </div>
+  </form>
+</wub-card>
