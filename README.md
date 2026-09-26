@@ -44,6 +44,52 @@ npx nx graph                    # Abhängigkeitsgraph anzeigen
 npx nx affected -t test         # nur betroffene Projekte testen
 ```
 
+## Navigation
+
+### Innerhalb eines Fachmoduls
+
+Innerhalb eines Fachmoduls wird **relativ** navigiert. Das Modul kennt den Pfad nicht, unter dem die App es einhängt. Beispiel Bestandsdaten ([bestandsdaten.routes.ts](libs/bestandsdaten/src/lib/bestandsdaten.routes.ts)):
+
+| Von → Nach                           | Umsetzung                                                             |
+| ------------------------------------ | --------------------------------------------------------------------- |
+| Übersicht → Detail                   | Link-Spalte der Tabelle: `link: (v) => [v.vertragsnummer]`            |
+| Detail → Übersicht                   | `routerLink=".."`                                                     |
+| Detail → gefilterte Übersicht        | `routerLink=".." [queryParams]="{ sparte: v.sparte }"`                |
+| Übersicht → Filter setzen            | `routerLink="." [queryParams]="{ sparte: s }"`                        |
+| Detail → nächster/vorheriger Vertrag | `router.navigate(['..', nr], { relativeTo: route })` (programmatisch) |
+
+Routen- und Query-Parameter kommen per `withComponentInputBinding()` als Signal-Inputs in die Komponenten (`vertragsnummer = input.required<string>()`, `sparte = input<Sparte>()`).
+
+### Mehrere Unterseiten in einem Bereich
+
+Unterseiten eines Fachmoduls sind eigene Routen des Moduls und erscheinen als **Untermenü in der Side-Navigation**. Beispiel Provisionsdatenerfassung ([provisionsdatenerfassung.routes.ts](libs/provisionsdatenerfassung/src/lib/provisionsdatenerfassung.routes.ts)):
+
+```
+/provisionsdatenerfassung                →  Weiterleitung auf erfassen
+/provisionsdatenerfassung/erfassen       →  Provisionen erfassen
+/provisionsdatenerfassung/bezeichnungen  →  Provisionsbezeichnungen
+```
+
+- Die Menüeinträge stehen im App-Register [fachmodule.ts](apps/anwendungsrahmen/src/app/fachmodule.ts) unter `unterseiten`. Die Shell bekommt sie als `kinder` eines `NavigationItem` und klappt sie auf, solange der Bereich aktiv ist.
+- Die Pfade der Unterseiten müssen zu den Routen der Lib passen. `app.spec.ts` prüft, dass jeder Menüpunkt auf eine existierende Route führt.
+- Von einer Unterseite zur anderen innerhalb der Lib: `routerLink="../bezeichnungen"`.
+- Beim Wechsel der Unterseite wird die Seitenkomponente zerstört. Daten, die den Wechsel überleben oder von beiden Unterseiten gebraucht werden, gehören in einen Service (hier `Provisionsbezeichnungen` und `ErfassteProvisionen`).
+- Seiten mit Formularen schützt `ungespeicherteAenderungenGuard` aus `shared` (`canDeactivate`) vor versehentlichem Verlassen.
+
+### Zwischen Fachmodulen
+
+Fachmodule importieren sich nicht gegenseitig. Querverweise laufen über den **URL-Vertrag** in [verweise.ts](libs/shared/src/lib/verweise.ts):
+
+- `FACHMODUL_PFADE` legt fest, unter welchem Pfad die App ein Fachmodul einhängt. [fachmodule.ts](apps/anwendungsrahmen/src/app/fachmodule.ts) verwendet genau diese Konstanten.
+- `bestandsdatenVerweise` beschreibt die öffentlichen Einstiege von Bestandsdaten: `vertraege({ sparte })` und `vertrag(nr)`.
+- Die Auswertung verlinkt damit auf die gefilterte Vertragsübersicht und auf einzelne Verträge, ohne Code aus Bestandsdaten zu importieren:
+  ```html
+  @let ziel = verweise.vertraege({ sparte: zeile.sparte });
+  <a [routerLink]="ziel.pfad" [queryParams]="ziel.queryParams">…</a>
+  ```
+
+Weil nur URLs ausgetauscht werden, funktionieren die Verweise auch nach einer Aufteilung in getrennt deployte Module. Ändert ein Fachmodul eine öffentliche Route, muss es `verweise.ts` mit anpassen. Interne Routen, die niemand von außen anspringt, gehören nicht in den Vertrag.
+
 ## Neues Fachmodul hinzufügen
 
 1. Lib erzeugen:
@@ -51,7 +97,8 @@ npx nx affected -t test         # nur betroffene Projekte testen
    npx nx g @nx/angular:library libs/<name> --name=<name> --importPath=@monorepo-test-ai/<name> --prefix=<kürzel> --tags="type:feature,scope:<name>" --style=scss
    ```
 2. In `src/index.ts` nur die Routen exportieren (`export const <name>Routes: Route[]`).
-3. Eintrag in `apps/anwendungsrahmen/src/app/fachmodule.ts` ergänzen. Route und Navigation entstehen daraus automatisch.
+3. Pfad in `FACHMODUL_PFADE` (`libs/shared/src/lib/verweise.ts`) ergänzen, bei Bedarf öffentliche Verweise dazu.
+4. Eintrag in `apps/anwendungsrahmen/src/app/fachmodule.ts` ergänzen. Route und Navigation entstehen daraus automatisch.
 
 ## Später getrennt deployen (Module Federation)
 
